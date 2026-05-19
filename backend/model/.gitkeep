@@ -1,0 +1,6 @@
+# Folder ini akan berisi model hasil training:
+# - waste_classifier.h5
+# - class_indices.json
+# - training_history.png
+#
+# Jalankan: python train_model.py

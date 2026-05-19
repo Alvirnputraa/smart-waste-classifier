@@ -1,0 +1,16 @@
+[Unit]
+Description=Smart Waste Classifier FastAPI Backend
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/smart-waste/backend
+ExecStart=/opt/smart-waste/backend/venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000 --workers 1
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+venv/
+*.egg-info/
+
+# Model files (terlalu besar untuk GitHub)
+backend/model/waste_classifier.h5
+backend/model/waste_classifier.keras
+backend/model/training_history.png
+
+# Node
+node_modules/
+frontend/dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
