@@ -1,16 +1,33 @@
 # 🗑️ Smart Waste Classifier
 
-Aplikasi klasifikasi sampah berbasis web menggunakan **Machine Learning** (MobileNetV2 Transfer Learning).
+Sistem klasifikasi sampah berbasis web menggunakan **Machine Learning** (MobileNetV2 Transfer Learning) untuk membedakan sampah **Organik** dan **Anorganik**.
 
-> Tugas Mata Kuliah Machine Learning — Informatika
+> **Mata Kuliah:** Machine Learning — Informatika
 
 ---
 
-## 📋 Deskripsi
+## 👥 Anggota Kelompok 3
+
+| No | Nama | NIM |
+|----|------|-----|
+| 1 | Alvi Al Virana Putra | 2310614033 |
+| 2 | D'jihni Basil Fauzani | 2310614039 |
+| 3 | Rival Syifa Ruslani | 2310614036 |
+
+---
+
+## 📋 Deskripsi Proyek
 
 Sistem ini mengklasifikasikan gambar sampah menjadi dua kategori:
-- 🌿 **Organic** — sisa makanan, daun, ranting, bahan alami
-- ♻️ **Recyclable** — plastik, logam, kaca, kertas kering
+- 🌿 **Organik** — sisa makanan, daun, ranting, bahan alami
+- ♻️ **Anorganik** — plastik, logam, kaca, kertas kering
+
+### Fitur Utama
+- Upload gambar dari file
+- Ambil gambar langsung dari kamera HP
+- Prediksi real-time dengan confidence score
+- UI modern responsive (dark/light)
+- Deployed via Cloudflare Tunnel (HTTPS)
 
 ---
 
@@ -18,251 +35,147 @@ Sistem ini mengklasifikasikan gambar sampah menjadi dua kategori:
 
 | Layer | Teknologi |
 |-------|-----------|
-| Frontend | React 18 + Vite |
-| Backend | FastAPI (Python) |
+| Frontend | React 18 + Vite (JavaScript) |
+| Backend | FastAPI + Uvicorn (Python) |
 | ML Model | TensorFlow / Keras |
 | Architecture | MobileNetV2 Transfer Learning |
-| Image Processing | PIL (Pillow) |
-| Styling | CSS Modules (dark modern UI) |
+| Image Processing | Pillow (PIL) |
+| Web Server | Nginx |
+| Deployment | Ubuntu Server + Cloudflare Tunnel |
 
 ---
 
-## 📁 Struktur Project
+## 📁 Struktur Folder
 
 ```
-smart-waste/
-│
-├── backend/
-│   ├── main.py              ← FastAPI server + endpoint /predict
-│   ├── train_model.py       ← Script training model
-│   ├── requirements.txt     ← Dependensi Python
-│   ├── model/
-│   │   ├── waste_classifier.h5     ← Model hasil training (dibuat setelah train)
-│   │   └── class_indices.json      ← Mapping kelas
-│   └── utils/
-│       ├── __init__.py
-│       └── preprocess.py    ← Fungsi preprocessing gambar
-│
-├── frontend/
-│   ├── src/
-│   │   ├── App.jsx          ← Komponen utama React
-│   │   ├── App.module.css   ← Styling CSS Modules
-│   │   ├── main.jsx         ← Entry point React
-│   │   └── index.css        ← Global CSS variables
-│   ├── index.html
-│   ├── package.json
-│   └── vite.config.js
-│
+smart-waste-classifier/
+├── data/               # Dataset (link ke Google Drive/Kaggle)
+├── notebooks/          # Jupyter notebook (EDA, training)
+├── models/             # Saved model (.h5) + class indices
+├── app/                # Deployment app (FastAPI + React)
+│   ├── backend/        # FastAPI server + training script
+│   └── frontend/       # React + Vite UI
+├── reports/            # Laporan PDF dan slide PDF
+├── requirements.txt    # Dependensi Python
 └── README.md
 ```
 
 ---
 
-## ⚙️ Cara Install & Menjalankan
+## 📊 Hasil Performa Model
+
+| Metrik | Nilai |
+|--------|-------|
+| **Validation Accuracy** | 94.41% |
+| **Validation Loss** | 0.2218 |
+| **Arsitektur** | MobileNetV2 + Custom Head |
+| **Optimizer** | Adam (lr=1e-3 → 1e-4) |
+| **Loss Function** | Binary Crossentropy |
+| **Training Strategy** | 2-Phase (Frozen → Fine-tune) |
+
+### Dataset
+- **Organic (O):** 12.565 gambar
+- **Anorganik (R):** 9.999 gambar
+- **Total:** 22.564 gambar
+- **Split:** 80% training, 20% validation
+
+### Preprocessing
+- Resize: 224×224 piksel
+- Normalisasi: pixel / 255.0
+- Augmentasi: rotation, zoom, flip, shift, brightness
+
+---
+
+## ⚙️ Cara Instalasi & Run
 
 ### Prasyarat
-- Python 3.9 – 3.11
+- Python 3.8 – 3.10
 - Node.js 18+
 - pip
 
----
-
-### 1️⃣ Setup Backend
-
-Buka terminal, masuk ke folder backend:
-
+### 1. Clone Repository
 ```bash
-cd smart-waste/backend
+git clone https://github.com/Alvirnputraa/smart-waste-classifier.git
+cd smart-waste-classifier
 ```
 
-Buat virtual environment (disarankan):
-
+### 2. Setup Backend
 ```bash
+cd app/backend
 python -m venv venv
-```
-
-Aktifkan virtual environment:
-
-```bash
-# Windows CMD
-venv\Scripts\activate
-
-# Windows PowerShell
-venv\Scripts\Activate.ps1
-
-# Mac/Linux
-source venv/bin/activate
-```
-
-Install dependensi:
-
-```bash
+venv\Scripts\activate          # Windows
+# source venv/bin/activate     # Linux/Mac
 pip install -r requirements.txt
 ```
 
----
-
-### 2️⃣ Training Model
-
-> ⚠️ Lakukan ini SEBELUM menjalankan backend server.
-> Proses training membutuhkan waktu 10–30 menit tergantung spesifikasi PC.
-
+### 3. Training Model
 ```bash
 python train_model.py
 ```
+> Output: `models/waste_classifier.h5` (accuracy ~94%)
 
-Output yang diharapkan:
-```
-[1/5] Loading dataset...
-  Class mapping: {'O': 0, 'R': 1}
-  Training samples  : 18051
-  Validation samples: 4513
-
-[2/5] Building MobileNetV2 model...
-[3/5] Training model (Phase 1 - Frozen base)...
-[4/5] Fine-tuning (Phase 2 - Unfreeze top 30 layers)...
-[5/5] Evaluating model...
-
-  ✅ Final Validation Accuracy : 95.xx%
-  ✅ Final Validation Loss     : 0.xxxx
-
-  Model saved to: model/waste_classifier.h5
-```
-
-File yang dihasilkan:
-- `model/waste_classifier.h5` — model terlatih
-- `model/class_indices.json` — mapping kelas
-- `model/training_history.png` — grafik akurasi & loss
-
----
-
-### 3️⃣ Jalankan Backend Server
-
+### 4. Jalankan Backend
 ```bash
 python main.py
 ```
+> Backend berjalan di: http://localhost:8000
 
-Atau dengan uvicorn langsung:
-
+### 5. Setup & Jalankan Frontend
 ```bash
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-Backend berjalan di: **http://localhost:8000**
-
-Cek API docs: **http://localhost:8000/docs**
-
----
-
-### 4️⃣ Setup & Jalankan Frontend
-
-Buka terminal baru, masuk ke folder frontend:
-
-```bash
-cd smart-waste/frontend
-```
-
-Install dependensi Node.js:
-
-```bash
+cd app/frontend
 npm install
-```
-
-Jalankan development server:
-
-```bash
 npm run dev
 ```
+> Frontend berjalan di: http://localhost:5173
 
-Frontend berjalan di: **http://localhost:5173**
+### 6. Buka Browser
+```
+http://localhost:5173
+```
 
 ---
 
-## 🚀 Cara Penggunaan
+## 🚀 Demo Online
 
-1. Buka browser → **http://localhost:5173**
-2. Pilih tab **Upload Gambar** atau **Kamera**
-3. Upload/ambil foto sampah
-4. Klik tombol **🔍 Prediksi Sampah**
-5. Lihat hasil:
-   - **Prediction**: Organic / Recyclable
-   - **Confidence**: persentase keyakinan model
+**URL:** https://smart-waste.shaleh.live
 
 ---
 
-## 📊 Contoh Output
+## 📓 Training di Google Colab
 
-```json
-{
-  "prediction": "Organic",
-  "confidence": 95.42
-}
-```
+Notebook training tersedia di folder `notebooks/`:
+1. Upload dataset ke Google Drive (`MyDrive/DATASET/TRAIN/`)
+2. Buka notebook di Google Colab
+3. Pilih Runtime → GPU (T4)
+4. Jalankan semua cell
 
-```json
-{
-  "prediction": "Recyclable",
-  "confidence": 88.17
-}
-```
+---
+
+## 📦 Dataset
+
+**Sumber:** [Kaggle - Garbage Classification](https://www.kaggle.com/datasets/asdasdasasdas/garbage-classification)
+
+**Lisensi:** CC0 Public Domain — bebas digunakan untuk keperluan akademik.
 
 ---
 
 ## 🔌 API Endpoint
 
 ### `POST /predict`
-
 Upload gambar untuk diprediksi.
 
-**Request:**
-```
-Content-Type: multipart/form-data
-Body: file = <image file>
-```
+**Request:** `multipart/form-data` dengan field `file`
 
 **Response:**
 ```json
 {
-  "prediction": "Organic",
+  "prediction": "Organik",
   "confidence": 95.42
 }
 ```
 
-### `GET /health`
-
-Cek status server dan model.
-
-### `GET /`
-
-Health check dasar.
-
 ---
 
-## ⚠️ Troubleshooting
+## 📄 Lisensi
 
-| Masalah | Solusi |
-|---------|--------|
-| `Model belum dimuat` | Jalankan `train_model.py` terlebih dahulu |
-| `Cannot connect to server` | Pastikan backend berjalan di port 8000 |
-| `CUDA/GPU error` | Training akan otomatis fallback ke CPU |
-| `npm install` gagal | Pastikan Node.js versi 18+ terinstall |
-| Kamera tidak muncul | Izinkan akses kamera di browser |
-
----
-
-## 📦 Dataset
-
-Dataset berada di:
-```
-C:\Users\Administrator\Downloads\archive (1)\DATASET\TRAIN\
-├── O\   ← 12.565 gambar Organic
-└── R\   ← 9.999 gambar Recyclable
-```
-
-Total: **~22.564 gambar**
-
----
-
-## 👨‍💻 Dibuat untuk
-
-Tugas Mata Kuliah **Machine Learning** — Program Studi Informatika
+Project ini dibuat untuk keperluan tugas akademik Mata Kuliah Machine Learning — Program Studi Informatika.
